@@ -15,6 +15,7 @@ import util.misc as utils
 from datasets import build_dataset, get_coco_api_from_dataset
 from engine import evaluate, train_one_epoch
 from models import build_model
+from torchview import draw_graph
 
 
 def get_args_parser():
@@ -44,7 +45,7 @@ def get_args_parser():
                         help="Number of encoding layers in the transformer")
     parser.add_argument('--dec_layers', default=6, type=int,
                         help="Number of decoding layers in the transformer")
-    parser.add_argument('--dim_feedforward', default=2048, type=int,
+    parser.add_argument('--dim_feedforward', default=512, type=int,
                         help="Intermediate size of the feedforward layers in the transformer blocks")
     parser.add_argument('--hidden_dim', default=256, type=int,
                         help="Size of the embeddings (dimension of the transformer)")
@@ -121,6 +122,14 @@ def main(args):
     random.seed(seed)
 
     model, criterion, postprocessors = build_model(args)
+    print("#####################ModelSummary#####################")
+    print(model)
+    visual = draw_graph(model, input_size=(1, 4, 608, 745), device='cpu').visual_graph
+    graph_svg = visual.pipe(format='svg') # convert to binary data
+    with open('visual.svg', 'wb') as f:
+        f.write(graph_svg)
+    # torch.Size([1, 4, 608, 745])
+    print("#####################ModelSummary#####################")
     model.to(device)
 
     model_without_ddp = model
