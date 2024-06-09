@@ -58,18 +58,22 @@ def plot_logs(logs, fields=('class_error', 'loss_bbox_unscaled', 'mAP'), ewm_col
         for j, field in enumerate(fields):
             if field == 'mAP':
                 coco_eval = pd.DataFrame(
-                    np.stack(df.test_coco_eval_bbox.dropna().values)[:, 1]
+                    np.array(df.test_coco_eval_bbox.dropna().values.tolist())[:, 1]
                 ).ewm(com=ewm_col).mean()
                 axs[j].plot(coco_eval, c=color)
             else:
-                df.interpolate().ewm(com=ewm_col).mean().plot(
+                df_numeric = df.apply(pd.to_numeric, errors='coerce').infer_objects()
+                df_numeric.interpolate().ewm(com=ewm_col).mean().plot(
                     y=[f'train_{field}', f'test_{field}'],
                     ax=axs[j],
                     color=[color] * 2,
                     style=['-', '--']
                 )
     for ax, field in zip(axs, fields):
-        ax.legend([Path(p).name for p in logs])
+        if field == 'mAP':
+            ax.legend(['val'])
+        else:
+            ax.legend(['train', 'val'])
         ax.set_title(field)
 
 
