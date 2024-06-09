@@ -15,3 +15,4 @@ not_tracked_dir/
 .vscode
 outputs_old/
 detr-r50_no-class-head.pth
+image.dd
