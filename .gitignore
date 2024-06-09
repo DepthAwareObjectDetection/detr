@@ -16,3 +16,5 @@ not_tracked_dir/
 outputs_old/
 detr-r50_no-class-head.pth
 image.dd
+outputs/
+outputs-low-lr/
