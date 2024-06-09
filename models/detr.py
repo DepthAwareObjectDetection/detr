@@ -11,7 +11,8 @@ from util.misc import (NestedTensor, nested_tensor_from_tensor_list,
                        accuracy, get_world_size, interpolate,
                        is_dist_avail_and_initialized)
 
-from .backbone import build_backbone
+# from .backbone import build_backbone, build_backbone_custom
+from .DCNN_backbone import build_backbone
 from .matcher import build_matcher
 from .segmentation import (DETRsegm, PostProcessPanoptic, PostProcessSegm,
                            dice_loss, sigmoid_focal_loss)
@@ -326,6 +327,8 @@ def build(args):
     device = torch.device(args.device)
 
     backbone = build_backbone(args)
+    # backbone = build_backbone_custom(args)
+
 
     transformer = build_transformer(args)
 
