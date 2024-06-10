@@ -45,7 +45,7 @@ def get_args_parser():
                         help="Number of encoding layers in the transformer")
     parser.add_argument('--dec_layers', default=6, type=int,
                         help="Number of decoding layers in the transformer")
-    parser.add_argument('--dim_feedforward', default=512, type=int,
+    parser.add_argument('--dim_feedforward', default=2048, type=int,
                         help="Intermediate size of the feedforward layers in the transformer blocks")
     parser.add_argument('--hidden_dim', default=256, type=int,
                         help="Size of the embeddings (dimension of the transformer)")
@@ -138,6 +138,11 @@ def main(args):
         model_without_ddp = model.module
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print('number of params:', n_parameters)
+
+    # Set requires_grad to False for parameters in backbone transformer
+    for n, p in model_without_ddp.named_parameters():
+        if "transformer" in n:
+            p.requires_grad_(False)
 
     param_dicts = [
         {"params": [p for n, p in model_without_ddp.named_parameters() if "backbone" not in n and p.requires_grad]},
