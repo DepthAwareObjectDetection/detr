@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os
 
 from pathlib import Path, PurePath
 
@@ -51,29 +52,31 @@ def plot_logs(logs, fields=('class_error', 'loss_bbox_unscaled', 'mAP'), ewm_col
 
     # load log file(s) and plot
     dfs = [pd.read_json(Path(p) / log_name, lines=True) for p in logs]
+    titles = [log.name.removeprefix("outputs-low-lr-") for log in logs]
 
     fig, axs = plt.subplots(ncols=len(fields), figsize=(16, 5))
 
-    for df, color in zip(dfs, sns.color_palette(n_colors=len(logs))):
+    for df, color, title in zip(dfs, sns.color_palette(n_colors=len(logs)), titles):
         for j, field in enumerate(fields):
             if field == 'mAP':
                 coco_eval = pd.DataFrame(
                     np.array(df.test_coco_eval_bbox.dropna().values.tolist())[:, 1]
                 ).ewm(com=ewm_col).mean()
-                axs[j].plot(coco_eval, c=color)
+                axs[j].plot(coco_eval, c=color, label=f'{title} val')
             else:
                 df_numeric = df.apply(pd.to_numeric, errors='coerce').infer_objects()
                 df_numeric.interpolate().ewm(com=ewm_col).mean().plot(
                     y=[f'train_{field}', f'test_{field}'],
                     ax=axs[j],
                     color=[color] * 2,
-                    style=['-', '--']
+                    style=['-', '--'],
+                    label=[f'{title} train', f'{title} val']
                 )
     for ax, field in zip(axs, fields):
         if field == 'mAP':
-            ax.legend(['val'])
+            ax.legend()
         else:
-            ax.legend(['train', 'val'])
+            ax.legend()
         ax.set_title(field)
 
 
