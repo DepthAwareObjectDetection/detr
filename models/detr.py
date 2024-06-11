@@ -328,6 +328,8 @@ def build(args):
     backbone = build_backbone(args)
 
     transformer = build_transformer(args)
+    for param in transformer.parameters():
+        param.requires_grad = False
 
     model = DETR(
         backbone,
