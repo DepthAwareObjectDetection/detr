@@ -1,5 +1,5 @@
 # Depth Adaptive Detection Transformer
-|* [<img src="images/github-mark-white.svg" width="40">](https://github.com/DepthAwareObjectDetection/detr) *|
+[<img src="images/github-mark-white.svg" width="40">](https://github.com/DepthAwareObjectDetection/detr)
 ## Introduction
 Can depth information from these cameras improve the detection performance of a state-of-the-art object detector? 
 Depth aware convolution layers like the [ShapeConv](https://github.com/DepthAwareObjectDetection/ShapeConv) and [Depth Adaptive CNN](https://github.com/DepthAwareObjectDetection/Depth-Adapted-CNN) have shown great promise in improving performance on RGB-D datasets. 
