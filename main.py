@@ -20,11 +20,11 @@ from torchview import draw_graph
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Set transformer detector', add_help=False)
-    parser.add_argument('--lr', default=1e-4, type=float)
-    parser.add_argument('--lr_backbone', default=1e-5, type=float)
-    parser.add_argument('--batch_size', default=2, type=int)
+    parser.add_argument('--lr', default=0.125e-4, type=float)
+    parser.add_argument('--lr_backbone', default=0.125e-5, type=float)
+    parser.add_argument('--batch_size', default=1, type=int)
     parser.add_argument('--weight_decay', default=1e-4, type=float)
-    parser.add_argument('--epochs', default=300, type=int)
+    parser.add_argument('--epochs', default=3, type=int)
     parser.add_argument('--lr_drop', default=200, type=int)
     parser.add_argument('--clip_max_norm', default=0.1, type=float,
                         help='gradient clipping max norm')
@@ -80,14 +80,14 @@ def get_args_parser():
                         help="Relative classification weight of the no-object class")
 
     # dataset parameters
-    parser.add_argument('--num_classes', default=None, type=int,
+    parser.add_argument('--num_classes', default=5, type=int,
                         help='#classes in your dataset, which can override the value hard-coded in file models/detr.py')
     parser.add_argument('--dataset_file', default='coco')
-    parser.add_argument('--coco_path', type=str)
+    parser.add_argument('--coco_path', type=str, default='/home/boss/TU_Delft/CS4245-CV/detr_project/view-of-delft-dataset')
     parser.add_argument('--coco_panoptic_path', type=str)
     parser.add_argument('--remove_difficult', action='store_true')
 
-    parser.add_argument('--output_dir', default='',
+    parser.add_argument('--output_dir', default='outputs-low-lr-shape-conv',
                         help='path where to save, empty for no saving')
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
@@ -124,12 +124,12 @@ def main(args):
     model, criterion, postprocessors = build_model(args)
     print("#####################ModelSummary#####################")
     print(model)
-    visual = draw_graph(model, input_size=(1, 4, 608, 745), device='cpu').visual_graph
-    graph_svg = visual.pipe(format='svg') # convert to binary data
-    with open('visual.svg', 'wb') as f:
-        f.write(graph_svg)
+    # visual = draw_graph(model, input_size=(1, 4, 608, 745), device='cpu').visual_graph
+    # graph_svg = visual.pipe(format='svg') # convert to binary data
+    # with open('visual.svg', 'wb') as f:
+        # f.write(graph_svg)
     # torch.Size([1, 4, 608, 745])
-    print("#####################ModelSummary#####################")
+    # print("#####################ModelSummary#####################")
     model.to(device)
 
     model_without_ddp = model

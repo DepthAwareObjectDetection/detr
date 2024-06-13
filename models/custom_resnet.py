@@ -10,7 +10,9 @@ import collections.abc as container_abcs
 from torch._jit_internal import Optional
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
-from aCNN import computeOffset
+# from .aCNN import computeOffset
+from torchvision.ops.deform_conv import DeformConv2d
+
 
 from typing import Type, Any, Callable, Union, List, Optional
 
@@ -261,10 +263,7 @@ class DepthResNet(nn.Module):
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         # See note [TorchScript super()]
-        in_x = x[:, :3, :, :]
-        depth_x = x[:, 3, :, :]
-        offset = computeOffset(depth_x, 7, 1)
-        x = self.conv1(in_x, offset)
+        x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
