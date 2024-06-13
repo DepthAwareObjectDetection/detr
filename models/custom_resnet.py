@@ -10,6 +10,7 @@ import collections.abc as container_abcs
 from torch._jit_internal import Optional
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
+from aCNN import computeOffset
 
 from typing import Type, Any, Callable, Union, List, Optional
 
@@ -189,7 +190,7 @@ class DepthResNet(nn.Module):
         self.groups = groups
         self.base_width = width_per_group
         # Change the line below in your code Aleksander
-        self.conv1 = ShapeConv2d(4, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
+        self.conv1 = DeformConv2d(3, self.inplanes, kernel_size=7, stride=2, padding=3)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -260,7 +261,10 @@ class DepthResNet(nn.Module):
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         # See note [TorchScript super()]
-        x = self.conv1(x)
+        in_x = x[:, :3, :, :]
+        depth_x = x[:, 3, :, :]
+        offset = computeOffset(depth_x, 7, 1)
+        x = self.conv1(in_x, offset)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
