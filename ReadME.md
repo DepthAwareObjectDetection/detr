@@ -1,5 +1,5 @@
 # Depth Adaptive Detection Transformer
-[<img src="images/github-mark.svg" width="40">](https://github.com/DepthAwareObjectDetection/detr)
+|* [<img src="images/github-mark-white.svg" width="40">](https://github.com/DepthAwareObjectDetection/detr) *|
 ## Introduction
 Can depth information from these cameras improve the detection performance of a state-of-the-art object detector? 
 Depth aware convolution layers like the [ShapeConv](https://github.com/DepthAwareObjectDetection/ShapeConv) and [Depth Adaptive CNN](https://github.com/DepthAwareObjectDetection/Depth-Adapted-CNN) have shown great promise in improving performance on RGB-D datasets. 
@@ -11,6 +11,15 @@ The rest of the blogpost is organised as follows: We start of by introducing Sha
 
 
 ## ShapeConv
-Shape-aware Convolutional layer (ShapeConv) processes depth information by decomposing it into different components -> a shape component and a base component.
+Shape-aware Convolutional layer (ShapeConv) processes depth information by decomposing it into different components.
+Key points are as follows
+- ShapeConv decomposes the input image into a shape component and a base component
+- The shape components inform where the image is
+- The base component informs what the image is
+- ShapeConv leverages two trainable set of weights for each component as compared to one 'weight' for the vanilla convolutional layer
+<img src="images/shape_conv.png" width="">
+*A high level overview of ShapeCong*
 
-$\sqrt{3x-1}+(1+x)^2$
+## DeTR
+
+### Sending 4 channel images to DeTR
