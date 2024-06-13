@@ -38,11 +38,14 @@ def Neighbors2D(depth, conv_filter = 3, dilation =1):
     half_grid_size = int(conv_filter / 2) 
 
 
-    height = depth.shape[1]
-    width = depth.shape[2]
+    height = depth.shape[2]
+    width = depth.shape[3]
     feature_map_height = height - conv_filter +1
     feature_map_width = width - conv_filter + 1
     dir_u_index, dir_v_index = grid(half_grid_size )
+
+    print("depth shape", depth.shape)
+    print("depth shape[0]", depth.shape[0])
 
     new  = torch.zeros(depth.shape[0], conv_filter**2, feature_map_height, feature_map_width,  3 ).cuda()
     coord_V = torch.arange(half_grid_size + dir_v_index[0], half_grid_size + feature_map_height + dir_v_index[0]).cuda() #deplaced coord for the neighborhood

@@ -10,7 +10,9 @@ import torch
 import torch.utils.data
 import torchvision
 from pycocotools import mask as coco_mask
-
+import numpy as np
+import os
+from PIL import Image
 import datasets.transforms as T
 
 
@@ -19,6 +21,12 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         super(CocoDetection, self).__init__(img_folder, ann_file)
         self._transforms = transforms
         self.prepare = ConvertCocoPolysToMask(return_masks)
+
+    def _load_image(self, id: int) -> Image.Image:
+        path = self.coco.loadImgs(id)[0]["file_name"]
+        arr = np.load(os.path.join(self.root, path)).astype(np.uint8)
+        img = Image.fromarray(arr)
+        return img
 
     def __getitem__(self, idx):
         img, target = super(CocoDetection, self).__getitem__(idx)
@@ -116,7 +124,7 @@ def make_coco_transforms(image_set):
 
     normalize = T.Compose([
         T.ToTensor(),
-        T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        T.Normalize([0.485, 0.456, 0.406, 0.5], [0.229, 0.224, 0.225, 0.225])
     ])
 
     scales = [480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800]

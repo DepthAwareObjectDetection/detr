@@ -48,9 +48,9 @@ class DepthAwareResNet(ResNet):
 
         return nn.Sequential(*layers)
     
-    def forward(self, x, depth):
+    def forward(self, x):
 
-        depth = depth.unsqueeze(0)
+        depth = x[-1].unsqueeze(0)
 
         x = self.conv1(x, depth)
         x = self.bn1(x)
