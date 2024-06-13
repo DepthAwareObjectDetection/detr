@@ -15,6 +15,7 @@ import util.misc as utils
 from datasets import build_dataset, get_coco_api_from_dataset
 from engine import evaluate, train_one_epoch
 from models import build_model
+from torchview import draw_graph
 
 
 def get_args_parser():
@@ -79,6 +80,8 @@ def get_args_parser():
                         help="Relative classification weight of the no-object class")
 
     # dataset parameters
+    parser.add_argument('--num_classes', default=None, type=int,
+                        help='#classes in your dataset, which can override the value hard-coded in file models/detr.py')
     parser.add_argument('--dataset_file', default='coco')
     parser.add_argument('--coco_path', type=str)
     parser.add_argument('--coco_panoptic_path', type=str)
@@ -119,6 +122,14 @@ def main(args):
     random.seed(seed)
 
     model, criterion, postprocessors = build_model(args)
+    print("#####################ModelSummary#####################")
+    print(model)
+    visual = draw_graph(model, input_size=(1, 4, 608, 745), device='cpu').visual_graph
+    graph_svg = visual.pipe(format='svg') # convert to binary data
+    with open('visual.svg', 'wb') as f:
+        f.write(graph_svg)
+    # torch.Size([1, 4, 608, 745])
+    print("#####################ModelSummary#####################")
     model.to(device)
 
     model_without_ddp = model
@@ -127,6 +138,11 @@ def main(args):
         model_without_ddp = model.module
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print('number of params:', n_parameters)
+
+    # Set requires_grad to False for parameters in backbone transformer
+    for n, p in model_without_ddp.named_parameters():
+        if "transformer" in n:
+            p.requires_grad_(False)
 
     param_dicts = [
         {"params": [p for n, p in model_without_ddp.named_parameters() if "backbone" not in n and p.requires_grad]},
@@ -175,10 +191,10 @@ def main(args):
                 args.resume, map_location='cpu', check_hash=True)
         else:
             checkpoint = torch.load(args.resume, map_location='cpu')
-        model_without_ddp.load_state_dict(checkpoint['model'])
+        model_without_ddp.load_state_dict(checkpoint['model'], strict=False)
         if not args.eval and 'optimizer' in checkpoint and 'lr_scheduler' in checkpoint and 'epoch' in checkpoint:
-            optimizer.load_state_dict(checkpoint['optimizer'])
-            lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
+            # optimizer.load_state_dict(checkpoint['optimizer'])
+            # lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
             args.start_epoch = checkpoint['epoch'] + 1
 
     if args.eval:
