@@ -2,17 +2,17 @@
 
 - [ ] DeTR: Matthijs & Aleksander  
 
-- [ ] ShapeConv: Shantnav  
+- [X] ShapeConv: Shantnav  
 
 - [ ] DepthConv for DeTR: Aleksander  
 
-- [ ] Changes to the architecture: Shantnav  
+- [X] Changes to the architecture: Shantnav  
 
-- [ ] Changes for ShapeConv: Shantnav  
+- [X] Changes for ShapeConv: Shantnav  
 
 - [ ] Changes for DepthConv: Aleskander  
 
-- [ ] Dataset & Dataset conversion: Shantnav  
+- [X] Dataset & Dataset conversion: Shantnav  
 
 - [ ] Images for dataset: Matthijs  
 
