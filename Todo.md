@@ -1,16 +1,16 @@
-- [ ] Introduce Why: Aleksander  
+- [X] Introduce Why: Aleksander  
 
-- [ ] DeTR: Matthijs & Aleksander  
+- [X] DeTR: Matthijs & Aleksander  
 
 - [X] ShapeConv: Shantnav  
 
-- [ ] DepthConv for DeTR: Aleksander  
+- [X] DepthConv for DeTR: Aleksander  
 
 - [X] Changes to the architecture: Shantnav  
 
 - [X] Changes for ShapeConv: Shantnav  
 
-- [ ] Changes for DepthConv: Aleskander  
+- [X] Changes for DepthConv: Aleskander  
 
 - [X] Dataset & Dataset conversion: Shantnav  
 
