@@ -23,3 +23,8 @@ Key points are as follows
 ## DeTR
 
 ### Sending 4 channel images to DeTR
+- The DeTR uses *torchvision.datasets.CocoDetection* class to get the dataset
+- This class uses the PIL library to read RGB images
+- We overode the *_load_image* class method to make it read numpy arrays (4-channel) and convert them to an object of PIL.Image
+
+### Adapting DeTR to used ShapeConv Convolution layer
