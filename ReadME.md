@@ -57,6 +57,11 @@ We get the depth information for the camera image by following these steps:
 - This class uses the PIL library to read RGB images
 - We overode the *_load_image* class method to make it read numpy arrays (4-channel) and convert them to an object of PIL.Image
 ### Adapting DeTR to use ShapeConv Convolution layer
+- PyTorch provides a modular implementation of the ResNet as part of its torchvision library
+- We modified the existing ResNet class definition to replace the first convolution layer (kernel size = 7) with the ShapeConv convolution layer
+- The authors of ShapeConv provide ShapeConv2D -> A torch.nn module that is a drop in replacement for the vanilla Conv2D module.
+- This new class is called DepthResNet (DRN).
+- We use the DepthResNet-18 (Depth equivalent of ResNet18) instead of DRN-50/ 100 used in the DeTR traditionally. This is done to make it trainable on a laptop GPU.
 
 ### Adapting DeTR to use Depth adaptive Convolution layer
 
