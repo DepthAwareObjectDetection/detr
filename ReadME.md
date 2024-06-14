@@ -49,7 +49,33 @@ Key points are as follows
 ### Adapting DeTR to used ShapeConv Convolution layer
 
 
-### Using 4d data in DeTR
+### General adaptations
+#### Using 4d data in DETR
+
+
+#### Freezing the transformer
 
 
 ## Results
+
+### Fine tuning
+
+
+### DeTR from scratch
+
+
+### ShapeConv from scratch
+
+
+### Comparison
+
+
+## Discussion
+
+
+
+## Future improvements
+
+
+
+
