@@ -11,7 +11,7 @@ from torch._jit_internal import Optional
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
 
-from typing import Type, Any, Callable, Union, List, Optional, Dict
+from typing import Type, Any, Callable, Union, List, Optional
 
 
 import torch
@@ -23,47 +23,29 @@ from torchvision.ops.deform_conv import DeformConv2d
 
 from torchvision.models.resnet import ResNet, Bottleneck
 
-# class DepthAwareConv2d(nn.Module):
-#     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True):
-#         super(DepthAwareConv2d, self).__init__()
-#         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias)
+class DepthAwareConv2d(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True):
+        super(DepthAwareConv2d, self).__init__()
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias)
     
-#     def forward(self, x):
+    def forward(self, x):
         
-#         # depth = x[:,-1:,:,:]
-#         depth = x[:,-1:,:,:]
-#         # depth = depth.unsqueeze(1)
-#         x = x[:,:3,:,:]
+        # depth = x[:,-1:,:,:]
+        depth = x[:,-1:,:,:]
+        # depth = depth.unsqueeze(1)
+        x = x[:,:3,:,:]
 
-#         print("Shape of depth tensor:", depth.shape)
-#         print("Shape of x tensor:", x.shape)
-#         # Example of using depth to modify the convolutional operation
-#         depth_resized = F.interpolate(depth, x.size()[2:], mode='bilinear', align_corners=True)
-#         depth_resized = depth_resized[:,-1,:,:]
-#         print("Shape of dedepth_resizedpth tensor:", depth_resized.shape)
+        print("Shape of depth tensor:", depth.shape)
+        print("Shape of x tensor:", x.shape)
+        # Example of using depth to modify the convolutional operation
+        depth_resized = F.interpolate(depth, x.size()[2:], mode='bilinear', align_corners=True)
+        depth_resized = depth_resized[:,-1,:,:]
+        print("Shape of dedepth_resizedpth tensor:", depth_resized.shape)
 
-#         offset = computeOffset(depth_resized, self.conv.kernel_size[0], self.conv.stride[0])
-#         offset = F.pad(offset, (1, 1, 1, 1), "constant", 0)
-#         # x = x + offset  # This is a simple example; you can define a more complex interaction
-#         return self.conv(x)
-
-# class DepthAwareConv2d(nn.Module):
-#     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True):
-#         super(DepthAwareConv2d, self).__init__()
-#         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias)
-    
-#     def forward(self, x, depth):
-#         x = x[:, :3, :, :]  # Take only RGB channels (assuming depth is the last channel)
-        
-#         # Resize depth to match input x size
-#         depth_resized = F.interpolate(depth, x.size()[2:], mode='bilinear', align_corners=True)
-#         depth_resized = depth_resized[:, -1, :, :]  # Extract the resized depth
-        
-#         offset = computeOffset(depth_resized, self.conv.kernel_size[0], self.conv.stride[0])
-#         offset = F.pad(offset, (1, 1, 1, 1), "constant", 0)
-        
-#         return self.conv(x)
-
+        offset = computeOffset(depth_resized, self.conv.kernel_size[0], self.conv.stride[0])
+        offset = F.pad(offset, (1, 1, 1, 1), "constant", 0)
+        # x = x + offset  # This is a simple example; you can define a more complex interaction
+        return self.conv(x)
     
 class mySequential(nn.Sequential):
     def forward(self, *input):
@@ -131,16 +113,15 @@ class DepthResNet(nn.Module):
         self.base_width = width_per_group
         # Change the line below in your code Aleksander
         #was 4
-        # self.conv1 = DepthAwareConv2d(4, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
-        self.conv1 = DeformConv2d(4, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
+        self.conv1 = DepthAwareConv2d(4, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
+        # self.conv1 = DeformConv2d(4, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
-        # self.layer4 = self._make_layer(block, 2048, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
+        self.layer4 = self._make_layer(block, 2048, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
 
         self.fc = nn.Linear(512 * block.expansion, num_classes)
@@ -201,21 +182,19 @@ class DepthResNet(nn.Module):
                 )
             )
 
-        # return nn.Sequential(*layers)
-        return mySequential(*layers)
+        return nn.Sequential(*layers)
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         # See note [TorchScript super()]
 
-        depth = x[:, -1, :, :]  # Separate depth from the input tensor
-        print("depth: ", depth.shape)
-        offset = computeOffset(depth[0], 7, 2)
-        offset = F.pad(offset, (3, 3, 3, 3), "constant", 0)
+        # depth = x[:, 3:4, :, :]  # Separate depth from the input tensor
+        # offset = computeOffset(depth[0], 7, 2)
+        # offset = F.pad(offset, (3, 3, 3, 3), "constant", 0)
 
-        x_in = x[:,:3,:,:]
+        # x_in = x[:,:3,:,:]
     
-        x = self.conv1(x_in, offset)
-        # x = self.conv1(x)
+        # x = self.conv1(x_in, offset)
+        x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
@@ -233,12 +212,6 @@ class DepthResNet(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:
         return self._forward_impl(x)
-    
-    def load_pretrained_weights(self, pretrained_state_dict: Dict[str, Tensor]) -> None:
-        model_dict = self.state_dict()
-        pretrained_dict = {k: v for k, v in pretrained_state_dict.items() if 'conv1' not in k}
-        model_dict.update(pretrained_dict)
-        self.load_state_dict(model_dict)
 
 def _depth_resnet(
     block: Type[Union[BasicBlock, Bottleneck]],
@@ -249,17 +222,7 @@ def _depth_resnet(
     return model
 
 
-# def depthresnet18(**kwargs: Any) -> DepthResNet:
-#     r"""ResNet-18 model from
-#     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
-
-#     Args:
-#         pretrained (bool): If True, returns a model pre-trained on ImageNet
-#         progress (bool): If True, displays a progress bar of the download to stderr
-#     """
-#     return _depth_resnet(BasicBlock, [2, 2, 2, 2], **kwargs)
-
-def depthresnet18(pretrained: bool = False, **kwargs: Any) -> DepthResNet:
+def depthresnet18(**kwargs: Any) -> DepthResNet:
     r"""ResNet-18 model from
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
 
@@ -267,9 +230,4 @@ def depthresnet18(pretrained: bool = False, **kwargs: Any) -> DepthResNet:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    model = _depth_resnet(BasicBlock, [2, 2, 2, 2], **kwargs)
-    if pretrained:
-        # Load pretrained ResNet weights, but exclude conv1 weights
-        pretrained_state_dict = torch.load('/home/boss/TU_Delft/CS4245-CV/detr_project/detr/models/resnet18_weights.pth')
-        model.load_pretrained_weights(pretrained_state_dict)
-    return model
+    return _depth_resnet(BasicBlock, [2, 2, 2, 2], **kwargs)

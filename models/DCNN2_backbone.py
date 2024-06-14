@@ -72,6 +72,7 @@ class BackboneBase(nn.Module):
         self.num_channels = num_channels
 
     def forward(self, tensor_list: NestedTensor):
+        print("Input tensor shape:", tensor_list.tensors.shape) 
         xs = self.body(tensor_list.tensors)
         out: Dict[str, NestedTensor] = {}
         for name, x in xs.items():
@@ -93,7 +94,7 @@ class Backbone(BackboneBase):
         #     pretrained=is_main_process(), norm_layer=FrozenBatchNorm2d)
         # num_channels = 512 if name in ('resnet18', 'resnet34') else 2048
         backbone = depthresnet18()
-        num_channels = 2048
+        num_channels = 512
         super().__init__(backbone, train_backbone, num_channels, return_interm_layers)
 
 
