@@ -1,12 +1,10 @@
-# DADETR: Depth Adaptive Detection Transformer
+# DA-DETR: Depth Adaptive Detection Transformer
 [<img src="images/github-mark-white.svg" width="40">](https://github.com/DepthAwareObjectDetection/detr)
 ## Introduction
 *Can depth information from stereo cameras improve the detection performance of a state-of-the-art object detector?*
 
 Lately, depth aware convolution layers like the [ShapeConv](https://github.com/DepthAwareObjectDetection/ShapeConv) and [Depth Adaptive CNN](https://github.com/DepthAwareObjectDetection/Depth-Adapted-CNN) have shown great promise in improving performance on RGB-D datasets. 
 We research the impact of using these depth/ shape aware convolution layers (in place of vanilla convolutions) in the [DeTR](https://github.com/DepthAwareObjectDetection/detr) object detector. 
-
-We use the [view-of-delft](https://github.com/tudelft-iv/view-of-delft-dataset) dataset to compare the models. Within this dataset, we use the RGB camera image along with the transformed LiDAR points for depth information. 
 
 The rest of the blogpost is organised as follows: We start of by introducing ShapeConv and Depth Adaptive CNNs first. 
 Then we talk about the Detection Transformer, it's backbone and how we modify it to use depth convolution layers. 
@@ -41,17 +39,26 @@ Key points are as follows
 
 
 ## View-of-Delft dataset
+The View-of-Delft (VoD) dataset is a novel automotive dataset containing 8600 frames of synchronized and calibrated 64-layer LiDAR-, (stereo) camera-, and 3+1D radar-data acquired in complex, urban traffic. It consists of more than 123000 3D bounding box annotations, including more than 26000 pedestrian, 10000 cyclist and 26000 car labels.
+<img src="images/labels.gif" width="">
+
+## Changing the architecture
+### Getting depth information for the RGB camera
+The VOD dataset containes synchronised data acquired from cameras and a LiDAR. 
+We get the depth information for the camera image by following these steps:
+
+- We first transforming the LiDAR point cloud to the camera's frame of reference.
+- We then use the camera's projection matrix to get the location of these transformed point clouds in the image frame. This representation is quite sparse
+- To get a more dense representation, we use the depth information of neighboring pixels and calculated a weighted average. 
+- Link to the original repository: https://github.com/BerensRWU/DenseMap
+<!-- @Matthijs please add images here -->
+### Using 4d data in DETR
 - The DeTR uses *torchvision.datasets.CocoDetection* class to get the dataset
 - This class uses the PIL library to read RGB images
 - We overode the *_load_image* class method to make it read numpy arrays (4-channel) and convert them to an object of PIL.Image
+### Adapting DeTR to use ShapeConv Convolution layer
 
-## Changing the architecture
-### Adapting DeTR to used ShapeConv Convolution layer
-
-
-### General adaptations
-#### Using 4d data in DETR
-
+### Adapting DeTR to use Depth adaptive Convolution layer
 
 #### Freezing the transformer
 
