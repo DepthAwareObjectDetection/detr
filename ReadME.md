@@ -100,6 +100,7 @@ We get the depth information for the camera image by following these steps:
 - The DeTR uses *torchvision.datasets.CocoDetection* class to get the dataset
 - This class uses the PIL library to read RGB images
 - We overode the *_load_image* class method to make it read numpy arrays (4-channel) and convert them to an object of PIL.Image
+
 ### Adapting DeTR to use ShapeConv Convolution layer
 - PyTorch provides a modular implementation of the ResNet as part of its torchvision library
 - We modified the existing ResNet class definition to replace the first convolution layer (kernel size = 7) with the ShapeConv convolution layer
