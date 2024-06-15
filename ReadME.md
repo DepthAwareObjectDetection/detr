@@ -17,7 +17,7 @@ Then we talk about the Detection Transformer, it's backbone and how we modify it
 Finally, we discuss results and progression of training over time.
 
 ## Why is this topic interesting and how is it relevant?
-The object detection techniques were introduced in the early 2000s. Histogram of Oriented Gradients, known as HOG, has marked a start to the pedestrian detection problem that has evolved ever since. Nowadays, just roughly 20 years later, there exists many techniques to deal with pedestrian detection within the automotive industry. Even though HOG is still widely use for the detection task, the deep models started to gain attention. The most widely used methods are CNN, Region-based CNN, YOLO, Single Shot MultiBox Detector (SSD). However, running these models is rather computationaly expensive.
+The object detection techniques were introduced in the early 2000s. Histogram of Oriented Gradients, known as HOG, has marked a start to the pedestrian detection problem that has evolved ever since. Nowadays, just roughly 20 years later, there exists many techniques to deal with pedestrian detection within the automotive industry. Even though HOG is still widely use for the detection task, the deep models started to gain attention. The most widely used methods are CNN, Region-based CNN, YOLO, Single Shot MultiBox Detector (SSD). However, running these models is rather computationally expensive.
 
 
 Another interesting method to perform the detection in the automated driving scenario is incorporation of depth into the model. The available cars on the market are currently packed with numerous sensors for detecting objects in front of the vehicle. Among the common sensors are stereo cameras, radars and LiDARs. The depth information is available for the detection in the ADAS systems, however in most cases it is not fused with object detections. There are rather a couple of subsystems governing the detection. After individual detections are made by each subsystem, the results are often fused or combined in a higher-level decision-making process. This fusion step integrates the outputs from different sensors to provide a more comprehensive understanding of the surrounding environment and to make informed decisions for driving tasks.
@@ -115,11 +115,14 @@ During our attempt to adapt the ResNet18 architecture, we introduced the DeformC
 
 We also experimented with various types of layers and attempted to incorporate depth processing in the forward pass of a custom layer. Despite trying many out-of-the-box approaches, the model failed to establish suitability for the given DeTR.
 
-In additon, we examined and modified the preprocessing functions for DeTR models to handle the additional offset argument. However, this would necessitate further modifications to the Transformer component, which was beyond the scope of this research.
+In addition, we examined and modified the preprocessing functions for DeTR models to handle the additional offset argument. However, this would necessitate further modifications to the Transformer component, which was beyond the scope of this research.
 
 Due to these implementation challenges and given the time constraints of this research assignment, we abandoned the implementation of this depth-adaptable CNN.
 
 #### Freezing the transformer
+To adapt the model to only train the backbone and keep the transformer frozen we adapted the method showcased by the original project to freeze parts of the model.
+This ensures only the changed backbone is trained, significantly reducing trainable parameters and allows easier validation of different models.
+Since the transformer is frozen, no gradients have to be calculated for this part of the model, further increasing performance and reducing time required to train.
 
 ## Results
 
@@ -136,8 +139,8 @@ To generate a baseline of the possible performance of DeTR on the View-of-Delft 
 architecture using the pretrained [DeTR R50](https://dl.fbaipublicfiles.com/detr/detr-r50-e632da11.pth) model available
 from the original repository.
 The original `class_embed` weights and bias are removed from the model in order to re-train on the new VOD dataset.
-We have finetuned the model for 40 epochs, after 10 epochs however little performance improvements could be noted.
-Finetuning shows us that the original DeTR architecture is able to achieve an Average Precision with IoU>0.5 (mAP) of
+We have fine-tuned the model for 40 epochs, after 10 epochs however little performance improvements could be noted.
+Fine-tuning shows us that the original DeTR architecture is able to achieve an Average Precision with IoU>0.5 (mAP) of
 0.7.
 Increasing epochs past 10 shows an increase in loss, indicating overfitting on the dataset.
 ![finetune-loss-mAP.png](images/finetune-loss-mAP.png)
