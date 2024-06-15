@@ -6,12 +6,12 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-import os
+from pathlib import Path, PurePath
 
 from pathlib import Path, PurePath
 
 
-def plot_logs(logs, fields=('class_error', 'loss_bbox_unscaled', 'mAP'), ewm_col=0, log_name='log.txt'):
+def plot_logs(logs, fields=('class_error', 'loss_bbox_unscaled', 'mAP'), ewm_col=0, log_name='log.txt', save_fig=False):
     '''
     Function to plot specific fields from training log(s). Plots both training and test results.
 
@@ -19,9 +19,11 @@ def plot_logs(logs, fields=('class_error', 'loss_bbox_unscaled', 'mAP'), ewm_col
               - fields = which results to plot from each log file - plots both training and test for each field.
               - ewm_col = optional, which column to use as the exponential weighted smoothing of the plots
               - log_name = optional, name of log file if different than default 'log.txt'.
+              - save_fig = optional, boolean to save the plot as an image file.
 
     :: Outputs - matplotlib plots of results in fields, color coded for each log file.
                - solid lines are training results, dashed lines are test results.
+               - if save_fig is True, saves plot as an image file in 'images/' directory.
 
     '''
     func_name = "plot_utils.py::plot_logs"
@@ -78,6 +80,24 @@ def plot_logs(logs, fields=('class_error', 'loss_bbox_unscaled', 'mAP'), ewm_col
         else:
             ax.legend()
         ax.set_title(field)
+
+    # Adjust layout
+    plt.tight_layout()
+
+    if save_fig:
+        # Create the 'images' directory if it doesn't exist
+        images_dir = Path("images")
+        images_dir.mkdir(exist_ok=True)
+
+        # Generate a combined title string
+        combined_title = "-".join(titles)
+        combined_fields = "-".join(fields)
+        save_path = images_dir / f"{combined_title}-{combined_fields}.png"
+
+        # Save the combined plot as a PNG file
+        plt.savefig(save_path)
+        print(f"Plot saved to {save_path}")
+    plt.show()
 
 
 def plot_precision_recall(files, naming_scheme='iter'):
