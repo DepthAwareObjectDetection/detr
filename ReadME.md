@@ -12,8 +12,9 @@ improving performance on RGB-D datasets.
 We research the impact of using these depth/ shape aware convolution layers (in place of vanilla convolutions) in
 the [DeTR](https://github.com/DepthAwareObjectDetection/detr) object detector.
 
-The rest of the blogpost is organised as follows: We start with introducing the topic and discussing its applications and relevance. Next we introduce ShapeConv and Depth Adaptive CNNs. 
-Then we talk about the Detection Transformer, it's backbone and how we modify it to use depth convolution layers. 
+The rest of the blogpost is organised as follows: We start with introducing the topic and discussing its applications and relevance. 
+Then we talk about the Detection Transformer and then we also introduce ShapeConv and Depth Adaptive CNNs. 
+Next, we discuss how the backbone of the DeTR was modified to incorporate depth/ shape adaptive convolution operations.
 Finally, we discuss results and progression of training over time.
 
 ## Why is this topic interesting and how is it relevant?
