@@ -1,7 +1,9 @@
 # DA-DETR: Depth Adaptive Detection Transformer
 
-[<img src="images/github-mark-white.svg" width="40">](https://github.com/DepthAwareObjectDetection/detr)
+[<img src="images/github-mark.svg" width="40">](https://github.com/DepthAwareObjectDetection/detr)
 
+By:
+A. Seremak | M. Steyerberg | S. Agarwal
 ## Introduction
 
 *Can depth information from stereo cameras improve the detection performance of a state-of-the-art object detector?*
