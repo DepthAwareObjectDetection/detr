@@ -13,20 +13,16 @@ We research the impact of using these depth/ shape aware convolution layers (in 
 the [DeTR](https://github.com/DepthAwareObjectDetection/detr) object detector.
 
 The rest of the blogpost is organised as follows: We start with introducing the topic and discussing its applications and relevance. 
-Then we talk about the Detection Transformer and then we also introduce ShapeConv and Depth Adaptive CNNs. 
-Next, we discuss how the backbone of the DeTR was modified to incorporate depth/ shape adaptive convolution operations.
+We introduce the Detection Transformer architecture and introduce ShapeConv and Depth Adaptive CNNs as proposed depth aware convolution layer addons. 
+Next, we discuss how the backbone of the DeTR was modified to incorporate these depth/ shape adaptive convolution operations.
 Finally, we discuss results and progression of training over time.
 
 ## Why is this topic interesting and how is it relevant?
 The object detection techniques were introduced in the early 2000s. Histogram of Oriented Gradients, known as HOG, has marked a start to the pedestrian detection problem that has evolved ever since. Nowadays, just roughly 20 years later, there exists many techniques to deal with pedestrian detection within the automotive industry. Even though HOG is still widely use for the detection task, the deep models started to gain attention. The most widely used methods are CNN, Region-based CNN, YOLO, Single Shot MultiBox Detector (SSD). However, running these models is rather computationally expensive.
 
-
 Another interesting method to perform the detection in the automated driving scenario is incorporation of depth into the model. The available cars on the market are currently packed with numerous sensors for detecting objects in front of the vehicle. Among the common sensors are stereo cameras, radars and LiDARs. The depth information is available for the detection in the ADAS systems, however in most cases it is not fused with object detections. There are rather a couple of subsystems governing the detection. After individual detections are made by each subsystem, the results are often fused or combined in a higher-level decision-making process. This fusion step integrates the outputs from different sensors to provide a more comprehensive understanding of the surrounding environment and to make informed decisions for driving tasks.
 
-
 Therefore, we embarked on testing the Detection Transformer (DeTR) in the automated driving setting. To achieve this we have converted and adapted the View of Delft dataset to be suitable for fine-tuning the model end-to-end. To incorporate the depth into predictions, we have created an instance of the original dataset that transforms the RGB into RGB-D images. We have then changed the backbone of the DETR to test, if the model with depth adapted backbone is suitable for pedestrian detection.
-
-
 
 ## DeTR
 
@@ -120,7 +116,7 @@ In addition, we examined and modified the preprocessing functions for DeTR model
 
 Due to these implementation challenges and given the time constraints of this research assignment, we abandoned the implementation of this depth-adaptable CNN.
 
-### Freezing the transformer
+#### Freezing the transformer
 To adapt the model to only train the backbone and keep the transformer frozen we adapted the method showcased by the original project to freeze parts of the model.
 This ensures only the changed backbone is trained, significantly reducing trainable parameters and allows easier validation of different models.
 Since the transformer is frozen, no gradients have to be calculated for this part of the model, further increasing performance and reducing time required to train.
